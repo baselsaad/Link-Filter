@@ -12,53 +12,60 @@ import java.util.ArrayList;
  */
 public class LinkFilter
 {
-    private static final String LEEREN_ZEILE = "";
-    
+
     public static void main (String [] args){
-        start();
+        new LinkFilter().start();
     }
-    
-    public static void start (){
-        System.out.println(fileReader (fileFilter ()));
-    }
-    
+
     /**
-     * HTML datei wird gefiltert und alle Links und Titeln werden in Array gespeichert, die ungueltigen Zeilen werden als leeren Zeilen gespeichert
+     * Startet das Programm 
      */
-    public static String[] fileFilter (){
-	final String regex = "<a.* href=\"([^\"]*)\".*?>(.*)</a>";
+    public void start (){
+        System.out.println(dateiLeser (dateiFilter ()));
+    }
+
+    /**
+     * HTML datei wird gefiltert und alle Links und Titeln werden in Array gespeichert,
+     * die ungueltigen Zeilen werden als leeren Zeilen gespeichert
+     * 
+     * @return Array ( String [] ) mit alle gefilterten Zeilen wird zurueckgegeben
+     */
+    public String[] dateiFilter (){
+        final String regex = "href=\"(.*)\">(.*)</a>"; //lesen von "href=" (.*)= beliebige Zeichen (in neuer Gruppe) bis ">",und dann beliebige Zeichen (in neuer Gruppe) bis  </a> 
+        final String LEEREN_ZEILE = "";
         Pattern pattern = Pattern.compile(regex);
         Scanner htmlLeser = new Scanner (System.in);
-        ArrayList<String> codeList  = new ArrayList<String> ();
-         
+        ArrayList<String> codeList = new ArrayList<String> ();
+
         while (htmlLeser.hasNext()){
             String htmlCode = htmlLeser.nextLine();
             Matcher matcher = pattern.matcher(htmlCode);
             String title = "";
             String link = "";
-            
+
             if (matcher.find()){
-              link = matcher.group(1); //gruppe eins fuer Links
-	      title = matcher.group(2); //gruppe zwei fuer Titel
+                link = matcher.group(1); //gruppe eins bei fuer Links
+                title = matcher.group(2); //gruppe zwei fuer Titel
             }
-            
-            if (title.isEmpty() || link.isEmpty()){
+
+            if (title.isEmpty() && link.isEmpty()){
                 codeList.add(LEEREN_ZEILE);
             }else {
                 String zeilenText = "\nTitle: "+title+", Link: "+link+", Anzahl Zeichen: "+link.length()+"\n";
                 codeList.add(zeilenText);
             }
-            
+
         }
-        
-        String [] tempArray = codeList.toArray(new String [0]);
+
+        String [] tempArray = codeList.toArray(new String [0]); //ArrayList to String []
         return tempArray;
     }
-    
+
     /**
      * Array wird gelesen und die ungueltigen Zeilen ignoriert
+     * @param datei, ein Array wird gelesen 
      */
-    public static String fileReader(String[] datei){
+    public String dateiLeser(String[] datei){
         StringBuilder htmlDatei = new StringBuilder();
         int zeilenAnzahl = 0;
         for (int i = 0;i < datei.length;i++){
@@ -68,8 +75,7 @@ public class LinkFilter
             }
         }
         htmlDatei.append("\n"+zeilenAnzahl+" Links wurden in " +datei.length+" Zeilen gefunden\n");
-        
         return String.valueOf(htmlDatei);
     }
-   
+
 }
